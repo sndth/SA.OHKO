@@ -28,9 +28,9 @@ InitThread(LPVOID)
       found = true;
       auto ifs = std::ifstream(path);
       auto json = json::parse(ifs);
-      auto version = Version::Verify();
+      auto version = Version::Verify(Version::GameName::GTASA);
 
-      if (!Version::IsSanAndreas(version) || 0x75770 == version.ver_offset) {
+      if (version == 0x75770) {
         MessageBoxA(nullptr,
                     "Unsupported game version",
                     "One Hit Knock Out",
@@ -42,8 +42,8 @@ InitThread(LPVOID)
       bool die_after_bike_fall = json.value("DieAfterBikeFall", true);
 
       if (enable) {
-        Patches::PatchHealthBar(version.ver_offset);
-        Patches::StartOHKOThread(version.ver_offset, die_after_bike_fall);
+        Patches::PatchHealthBar(version);
+        Patches::StartOHKOThread(version, die_after_bike_fall);
       }
 
       break;
