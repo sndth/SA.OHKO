@@ -77,17 +77,17 @@ Patches::OHKOThread(LPVOID parameter) -> DWORD
   delete reinterpret_cast<uint32_t*>(parameter);
 
   uint32_t player_pointer = 0;
-  uint32_t max_health_address = 0;
-  uint32_t max_armour_address = 0;
+  // uint32_t max_health_address = 0;
+  // uint32_t max_armour_address = 0;
 
   if (address == 0x75130) {
     player_pointer = 0x00C0F890;
-    max_health_address = 0x00C0BDC8;
-    max_armour_address = 0x00C0F9E0;
+    // max_health_address = 0x00C0BDC8;
+    // max_armour_address = 0x00C0F9E0;
   } else {
     player_pointer = address + 0x00B7CD98;
-    max_health_address = address + 0x00B793E0;
-    max_armour_address = address + 0x00B7CEE8;
+    // max_health_address = address + 0x00B793E0;
+    // max_armour_address = address + 0x00B7CEE8;
   }
 
   while (true) {
@@ -128,11 +128,11 @@ Patches::OHKOThread(LPVOID parameter) -> DWORD
 
     auto armour_address = uint32_t{ player + 0x548 };
 
-    if (Memory::ReadMemory<float>(max_health_address) > 5.682f)
-      *reinterpret_cast<float*>(max_health_address) = 5.682f;
+    // if (Memory::ReadMemory<float>(max_health_address) > 5.682f)
+    //   *reinterpret_cast<float*>(max_health_address) = 5.682f;
 
-    if (Memory::ReadMemory<uint8_t>(max_armour_address) > 0)
-      *reinterpret_cast<uint8_t*>(max_armour_address) = 0;
+    // if (Memory::ReadMemory<uint8_t>(max_armour_address) > 0)
+    //   *reinterpret_cast<uint8_t*>(max_armour_address) = 0;
 
     if (Memory::ReadMemory<float>(health_address) > 1.0001f)
       *reinterpret_cast<float*>(health_address) = 1.0001f;
