@@ -5,6 +5,7 @@
 #include <cstring>
 
 // Project includes
+#include "config.hpp"
 #include "memory.hpp"
 #include "patches.hpp"
 #include "vehicle.hpp"
@@ -21,15 +22,15 @@ Patches::IsGameRunning() -> bool
 }
 
 auto
-Patches::PatchHealthBar(uint32_t ver_offset) -> bool
+Patches::PatchHealthBar(uint32_t offset_version) -> bool
 {
   uint32_t address = 0;
 
-  if (!ver_offset)
+  if (!offset_version)
     address = 0x00589395;
-  else if (0x2680 == ver_offset)
+  else if (0x2680 == offset_version)
     address = 0x00589B65;
-  else if (0x75130 == ver_offset)
+  else if (0x75130 == offset_version)
     address = 0x00597263;
 
   if (!address)
@@ -37,6 +38,7 @@ Patches::PatchHealthBar(uint32_t ver_offset) -> bool
 
   DWORD old_protect = 0;
   DWORD tmp_old_protect = 0;
+
   if (!VirtualProtect(reinterpret_cast<void*>(address),
                       5,
                       PAGE_EXECUTE_READWRITE,
@@ -53,14 +55,14 @@ Patches::PatchHealthBar(uint32_t ver_offset) -> bool
 }
 
 auto
-Patches::StartOHKOThread(uint32_t ver_offset) -> bool
+Patches::StartOHKOThread(uint32_t offset_version) -> bool
 {
-  auto* args = new uint32_t{ ver_offset };
+  auto addr = new uint32_t{ offset_version };
   auto handle =
-    CreateThread(nullptr, 0, &Patches::OHKOThread, args, 0, nullptr);
+    CreateThread(nullptr, 0, &Patches::OHKOThread, addr, 0, nullptr);
 
   if (!handle) {
-    delete args;
+    delete addr;
     return false;
   }
 
@@ -68,26 +70,24 @@ Patches::StartOHKOThread(uint32_t ver_offset) -> bool
   return true;
 }
 
-#include "config.hpp"
-
 auto WINAPI
-Patches::OHKOThread(LPVOID param) -> DWORD
+Patches::OHKOThread(LPVOID parameter) -> DWORD
 {
-  auto args = *reinterpret_cast<uint32_t*>(param);
-  delete reinterpret_cast<uint32_t*>(param);
+  auto address = *reinterpret_cast<uint32_t*>(parameter);
+  delete reinterpret_cast<uint32_t*>(parameter);
 
+  uint32_t player_pointer = 0;
   uint32_t max_health_address = 0;
   uint32_t max_armour_address = 0;
-  uint32_t player_pointer = 0;
 
-  if (args == 0x75130) {
+  if (address == 0x75130) {
+    player_pointer = 0x00C0F890;
     max_health_address = 0x00C0BDC8;
     max_armour_address = 0x00C0F9E0;
-    player_pointer = 0x00C0F890;
   } else {
-    max_health_address = 0x00B793E0 + args;
-    max_armour_address = 0x00B7CEE8 + args;
-    player_pointer = 0x00B7CD98 + args;
+    player_pointer = address + 0x00B7CD98;
+    max_health_address = address + 0x00B793E0;
+    max_armour_address = address + 0x00B7CEE8;
   }
 
   while (true) {

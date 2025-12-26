@@ -18,10 +18,9 @@ class Patches
 
 public:
   auto static IsGameRunning() -> bool;
-  auto static PatchHealthBar(uint32_t ver_offset) -> bool;
-  auto static StartOHKOThread(uint32_t ver_offset)
-    -> bool;
+  auto static PatchHealthBar(uint32_t offset_version) -> bool;
+  auto static StartOHKOThread(uint32_t offset_version) -> bool;
 
 private:
-  auto static WINAPI OHKOThread(LPVOID param) -> DWORD;
+  auto static WINAPI OHKOThread(LPVOID parameter) -> DWORD;
 };

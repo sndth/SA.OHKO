@@ -1,7 +1,8 @@
-#include "config.hpp"
-
 // Standard includes
 #include <fstream>
+
+// Project includes
+#include "config.hpp"
 
 // External includes
 #include <nlohmann/json.hpp>
