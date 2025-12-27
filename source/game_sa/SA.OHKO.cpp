@@ -56,8 +56,16 @@ struct Main
     player->m_fHealth = 1;
     player->m_fArmour = 0;
 
-    // Hide health bar (US 1.0)
-    injector::MakeNOP(0x589395, 5);
+    auto& gvm = injector::address_manager::singleton();
+
+    /*
+     * Hide health bar,
+     * works only in 1.0 (US/EU)
+     */
+    if (gvm.IsSA() && 1 == gvm.GetMajorVersion() &&
+        0 == gvm.GetMinorVersion()) {
+      injector::MakeNOP(0x589395, 5);
+    }
   }
 
   void GameProcess(bool const bDieAfterBikeFall)
